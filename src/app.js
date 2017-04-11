@@ -2,14 +2,16 @@
  * Created by kawnayeen on 4/10/17.
  */
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, Dimensions } from 'react-native';
 import firebase from 'firebase';
-import { Header } from './component/common';
+import { Header, Button, Spinner, Card, CardSection } from './component/common';
 import LoginForm from './component/login.form';
+
+const height = Dimensions.get('window').height;
 
 class App extends Component {
 
-    state = { loggedIn: false };
+    state = { loggedIn: null };
 
     componentWillMount() {
         firebase.initializeApp({
@@ -30,14 +32,43 @@ class App extends Component {
         });
     }
 
+    renderContent() {
+        switch (this.state.loggedIn) {
+            case true:
+                return (
+                    <Card>
+                        <CardSection>
+                            <Button>Log Out</Button>
+                        </CardSection>
+                    </Card>
+                );
+            case false:
+                return <LoginForm />;
+            default:
+                return (
+                    <View style={styles.spinnerContainer}>
+                        <Spinner size="large" />
+                    </View>
+                );
+        }
+    }
+
     render() {
         return (
             <View>
                 <Header headerText="Authentication" />
-                <LoginForm />
+                {this.renderContent()}
             </View>
         );
     }
 }
+
+const styles = {
+  spinnerContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      height
+  }
+};
 
 export default App;
